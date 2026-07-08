@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://brydeeco.com.au/sitemap.xml
