@@ -34,12 +34,24 @@ exports.handler = async (event) => {
       quantity: Math.max(1, Math.min(50, parseInt(it.qty, 10) || 1)),
     }));
 
+    // Shipping: flat $10, free when the order subtotal is $100 or more.
+    const subtotal = line_items.reduce((sum, li) => sum + li.price_data.unit_amount * li.quantity, 0);
+    const freeShipping = subtotal >= 10000; // $100.00 in cents
+    const shipping_options = [{
+      shipping_rate_data: {
+        type: 'fixed_amount',
+        fixed_amount: { amount: freeShipping ? 0 : 1000, currency: 'aud' },
+        display_name: freeShipping ? 'Free delivery (orders over $100)' : 'Flat-rate delivery',
+      },
+    }];
+
     const origin = event.headers.origin || 'https://brydeeco.com.au';
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       line_items,
       shipping_address_collection: { allowed_countries: ['AU'] },
+      shipping_options,
       phone_number_collection: { enabled: true },
       success_url: origin + '/?order=success',
       cancel_url: origin + '/?order=cancelled',
