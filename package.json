@@ -1,0 +1,9 @@
+{
+  "name": "brydee-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Brydee & Co website (static) + Stripe checkout function",
+  "dependencies": {
+    "stripe": "^18.0.0"
+  }
+}
