@@ -2,10 +2,13 @@
 // The secret key lives only in the Netlify env var STRIPE_SECRET_KEY, never in the page.
 const Stripe = require('stripe');
 
-// All current products are $40 / box. Price is fixed server-side so it can't be
-// tampered with from the browser. When products with different prices are added,
-// replace this with a name->amount map (amounts in cents).
-const UNIT_AMOUNT = 4000; // AUD $40.00
+// Prices are fixed server-side (never trust the browser) via a name -> cents map.
+// Add a new line here whenever a new product or pack size is added to the site.
+const PRICES = {
+  'Choc Chip (8 Pack)': 3000,  // AUD $30.00
+  'Choc Chip (12 Pack)': 4500, // AUD $45.00
+};
+const DEFAULT_UNIT_AMOUNT = 4000; // AUD $40.00 — all other products (box of 10)
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -25,14 +28,20 @@ exports.handler = async (event) => {
       return { statusCode: 400, body: JSON.stringify({ error: 'Cart is empty' }) };
     }
 
-    const line_items = items.map((it) => ({
-      price_data: {
-        currency: 'aud',
-        product_data: { name: String(it.name || 'Cookie box').slice(0, 120) },
-        unit_amount: UNIT_AMOUNT,
-      },
-      quantity: Math.max(1, Math.min(50, parseInt(it.qty, 10) || 1)),
-    }));
+    const line_items = items.map((it) => {
+      const name = String(it.name || 'Cookie box').slice(0, 120);
+      const unit_amount = Object.prototype.hasOwnProperty.call(PRICES, name)
+        ? PRICES[name]
+        : DEFAULT_UNIT_AMOUNT;
+      return {
+        price_data: {
+          currency: 'aud',
+          product_data: { name },
+          unit_amount,
+        },
+        quantity: Math.max(1, Math.min(50, parseInt(it.qty, 10) || 1)),
+      };
+    });
 
     // Shipping: flat $10, free when the order subtotal is $100 or more.
     const subtotal = line_items.reduce((sum, li) => sum + li.price_data.unit_amount * li.quantity, 0);
