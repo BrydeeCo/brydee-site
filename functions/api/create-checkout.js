@@ -9,6 +9,10 @@ const PRICES = {
   'Choc Chip (12 Pack)': 4500, // AUD $45.00
   'Peanut Butter & Honey (8 Pack)': 3000,  // AUD $30.00
   'Peanut Butter & Honey (12 Pack)': 4500, // AUD $45.00
+  'Sticky Date Pudding (4 Slices)': 2000,  // AUD $20.00
+  'Sticky Date Pudding (8 Pieces)': 4000,  // AUD $40.00
+  'Lemon Cake (4 Slices)': 2000,  // AUD $20.00
+  'Lemon Cake (8 Pieces)': 4000,  // AUD $40.00
 };
 const DEFAULT_UNIT_AMOUNT = 4000; // AUD $40.00 — all other products (box of 10)
 
