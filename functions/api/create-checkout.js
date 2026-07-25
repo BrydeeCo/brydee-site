@@ -7,6 +7,8 @@
 const PRICES = {
   'Choc Chip (8 Pack)': 3000,  // AUD $30.00
   'Choc Chip (12 Pack)': 4500, // AUD $45.00
+  'Peanut Butter & Honey (8 Pack)': 3000,  // AUD $30.00
+  'Peanut Butter & Honey (12 Pack)': 4500, // AUD $45.00
 };
 const DEFAULT_UNIT_AMOUNT = 4000; // AUD $40.00 — all other products (box of 10)
 
