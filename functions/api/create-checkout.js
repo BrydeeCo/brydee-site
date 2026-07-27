@@ -63,7 +63,13 @@ export async function onRequestPost(context) {
     params.append('phone_number_collection[enabled]', 'true');
 
     const origin = context.request.headers.get('origin') || 'https://brydeeco.com.au';
-    params.append('success_url', origin + '/?order=success');
+    // Pass the real order value + a unique order id to the success page so
+    // Google Ads records the actual revenue per sale (not just a flat count).
+    // Stripe substitutes {CHECKOUT_SESSION_ID} with the real session id, which
+    // we use as the conversion transaction_id so a page refresh can't double-count.
+    const grandTotal = subtotal + (freeShipping ? 0 : 1000); // goods + shipping, in cents
+    const orderValue = (grandTotal / 100).toFixed(2);
+    params.append('success_url', origin + '/?order=success&value=' + orderValue + '&cur=aud&oid={CHECKOUT_SESSION_ID}');
     params.append('cancel_url', origin + '/?order=cancelled');
 
     const resp = await fetch('https://api.stripe.com/v1/checkout/sessions', {
